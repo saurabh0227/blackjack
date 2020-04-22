@@ -4,10 +4,12 @@ npm start
 # used babel to access es6 features of nodejs
 
 # Folder structure
-src -> api -> user (model, route and controller)
-src -> api -> services (contains nodemailer and auth verification)
-
-# Generated token will expire in 1 hour
+src -> api -> card (model, route and controller)
+src -> api -> game (model, route and controller)
+src -> api -> player (model, route and controller)
+src -> api -> round (model, route and controller)
+src -> api -> round_history (model, route and controller)
+src -> api -> services -> response -> index.js (Success function that returns response to the client)
 
 # Endpoints
 
