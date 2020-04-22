@@ -3,9 +3,10 @@ import mongoose, { Schema } from 'mongoose';
 const roundHistorySchema = new Schema({
     active: { type: Boolean, default: false },
     player: { type: Schema.ObjectId, ref: 'Player' },
-    cards: [
+    playingCards: [
         {
-            card: { type: Schema.ObjectId, ref: 'Card' }
+            card: { type: Schema.ObjectId, ref: 'Card' },
+            rank: { type: Number }
         }
     ],
     round: { type: Schema.ObjectId, ref: 'Round' },
@@ -13,7 +14,14 @@ const roundHistorySchema = new Schema({
     winCount: { type: Number, default: 0 },
     lossCount: { type: Number, default: 0 },
     tieCount: { type: Number, default: 0 },
-    number: { type: Number, default: 1 }
+    number: { type: Number, default: 1 },
+    cardType: { type: String, default: '' },
+    playedCards: [{
+        cardName: String,
+        cardValue: String,
+        rank: String
+    }],
+    point: { type: Number, default: 0 }
 }, {
     timestamps: true
 });
@@ -21,21 +29,25 @@ const roundHistorySchema = new Schema({
 roundHistorySchema.methods = {
     view(full) {
         const view = {
+            id: this.id,
             active: this.active,
             player: this.player,
-            cards: this.cards,
+            playingCards: this.playingCards,
             round: this.round,
             turn: this.turn,
             winCount: this.winCount,
             lossCount: this.lossCount,
             tieCount: this.tieCount,
-            number: this.number
+            number: this.number,
+            cardType: this.cardType,
+            playedCards: this.playedCards,
+            point: this.point
         }
 
         const history = {
-            player: this.player && this.player.userName ? this.player.userName : '--',
-            round: this.round && this.round.name ? this.round.name : '--',
-            game: this.round && this.round.game && this.round.game.name ? this.round.game.name : '--',
+            playerName: this.player && this.player.name ? this.player.name : '--',
+            roundName: this.round && this.round.name ? this.round.name : '--',
+            gameName: this.round && this.round.game && this.round.game.name ? this.round.game.name : '--',
             winCount: this.winCount,
             lossCount: this.lossCount,
             tieCount: this.tieCount

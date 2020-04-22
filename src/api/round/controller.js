@@ -12,7 +12,10 @@ export const create = async (req, res, next) => {
         error.data = errors.array();
         throw error;
     }
+
+    //Active round
     req.body.active = true;
+
     Round.create(req.body)
         .then(async (round) => {
             await shuffleCard(round)

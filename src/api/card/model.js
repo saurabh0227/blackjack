@@ -5,7 +5,7 @@ const values = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2'
 
 const cardSchema = new Schema({
     type: { type: String, enum: types },
-    value: { type: String, enum: values }
+    value: { type: String, enum: values },
 }, {
     timestamps: true
 });

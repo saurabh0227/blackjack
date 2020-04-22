@@ -17,6 +17,7 @@ const roundSchema = new Schema({
 roundSchema.methods = {
     view(full) {
         const view = {
+            id: this.id,
             active: this.active,
             game: this.game,
             name: this.name,

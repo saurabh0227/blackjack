@@ -18,12 +18,14 @@ export const registerPlayer = (req, res, next) => {
     const userName = req.body.userName;
     const password = req.body.password;
     const email = req.body.email;
+    const name = req.body.name;
     bcrypt.hash(password, 12)
         .then(async (hashedPw) => {
             const player = new Player({
                 userName: userName,
                 email: email,
                 password: hashedPw,
+                name: name
             });
             await player.save();
             return player;
@@ -85,7 +87,7 @@ export const list = (req, res, next) => {
 export const history = (req, res, next) => {
     let view = req.query.view ? req.query.view : null;
     RoundHistory.find({ player: req.query.playerId })
-        .populate('player', 'userName')
+        .populate('player', 'name')
         .populate(
             {
                 path: 'round',
