@@ -1,7 +1,7 @@
 import express from 'express';
 
 
-import { create, list, destroy, throwCard, distributeCard } from './controller';
+import { create, list, destroy, distributeCard, throwCard, updateWinnerCount, showWinnerPerRound } from './controller';
 
 const router = express.Router();
 
@@ -11,9 +11,13 @@ router.get('/list', list);
 
 router.delete('/delete/:id', destroy);
 
-router.get('/distribute-card/:roundId/:playerId', distributeCard);
+router.get('/distribute-card', distributeCard);
 
-router.put('/update/:roundId/:playerId', throwCard);
+router.get('/throw-card', throwCard);
+
+router.get('/update-winner-count', updateWinnerCount);
+
+router.get('/show-winner-per-round', showWinnerPerRound);
 
 
 

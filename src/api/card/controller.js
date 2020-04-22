@@ -22,12 +22,6 @@ export const create = async (req, res, next) => {
     }
 
     Card.create(req.body)
-        // .then((card) => {
-        //     card ? card.map(prop => {
-        //         prop.view(true)
-        //     }) : null
-        //     return card
-        // })
         .then(card => card.view(true))
         .then(card => success(res, 201, card))
         .catch(err => {
