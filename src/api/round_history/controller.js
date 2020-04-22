@@ -74,83 +74,86 @@ export const destroy = (req, res, next) => {
 
 export const distributeCard = async (req, res, next) => {
     try {
-        const shuffledDeck = await Round.findOne({ _id: req.params.roundId }, { deck: true })
+        /** Check if enough card is available in deck */
+        const noOfPlayers = await RoundHistory.countDocuments({ round: req.params.roundId, active: true })
+
+        const shuffledDeck = await Round.findOne({ _id: req.params.roundId }, { deck: true, active: true })
             .populate('deck.card', 'value')
+
+        let temp = (shuffledDeck.deck.length % (noOfPlayers * 4))
+
+        if (shuffledDeck.deck.length === temp) {
+            shuffledDeck.active = false;
+            await shuffledDeck.save();
+            res.status(302).json({ message: 'Not enough card is available in deck to distribute.' })
+            return;
+        }
+        /** Check finished */
+
         const activePlayers = await RoundHistory.findOne({ round: req.params.roundId, player: req.params.playerId, active: true },
             { round: 1, playingCards: 1, active: true })
-        // let cardsPerPlayer = parseInt(req.params.cardsPerPlayer)
-
-        // //Only max of 4 playing cards can be distribute to the players.
-        // if (cardsPerPlayer !== 4) {
-        //     res.status(301).json({ message: 'Only dustribute max of 4 cards to each player' })
-        //     return
-        // }
 
         //Number of cards for each player is four
         const cardsPerPlayer = 4;
 
-        //color or type of card
-        const cardType = req.params.cardType;
-        activePlayers.cardType = cardType;
-
         if (activePlayers.playingCards.length === 0) { activePlayers.playingCards = [] }
         for (let i = 0; i < cardsPerPlayer; i++) {
             if (shuffledDeck.deck[i].card.value === 'A') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 1 }); //Distributed
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id }); //Distributed
                 shuffledDeck.deck.splice(i, 1); //Removed from deck
             }
             else if (shuffledDeck.deck[i].card.value === 'K') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 2 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === 'Q') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 3 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === 'J') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 4 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '10') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 5 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '9') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 6 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '8') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 7 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '7') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 8 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '6') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 9 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '5') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 10 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '4') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 11 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '3') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 12 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
             else if (shuffledDeck.deck[i].card.value === '2') {
-                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id, rank: 13 });
+                activePlayers.playingCards.push({ card: shuffledDeck.deck[i].card.id });
                 shuffledDeck.deck.splice(i, 1);
             }
         }
         await shuffledDeck.save();
         await activePlayers.save();
-        res.status(200).json({ message: 'Card distributed to player.' })
+        success(res, 200, activePlayers);
     } catch (err) {
         console.log(err)
         next()
@@ -158,20 +161,42 @@ export const distributeCard = async (req, res, next) => {
 }
 
 export const throwCard = async (req, res, next) => {
-    const roHis = await RoundHistory.findOne({ player: req.params.playerId })
-        .populate('playingCards.card', 'type value')
+    try {
+        const roHis = await RoundHistory.findOne({ player: req.params.playerId, active: true })
+            .populate('playingCards.card', 'type value')
 
-
-}
-
-const checkForHighCard = async (roHis, card) => {
-    for (let i = 0; i < card.length; i++) {
-        if (card[i].value === 'K' || card[i].value === 'Q' || card[i].value === '10' || card[i].value === '9') {
-            handRank.filter(el => {
-                if (el === 'High card') {
-                    return '1'
-                }
-            })
+        for (let i = 0; i < roHis.playingCards.length; i++) {
+            if (roHis.playingCards[i].card.value === 'A') {
+                roHis.point += 3;
+                roHis.playedCards.push({ card: roHis.playingCards[i].card.id });
+                roHis.playingCards.splice(i, 1);
+            }
+            else if (roHis.playingCards[i].card.value === 'K') {
+                roHis.point += 2;
+                roHis.playedCards.push({ card: roHis.playingCards[i].card.id });
+                roHis.playingCards.splice(i, 1);
+            }
+            else if (roHis.playingCards[i].card.value === 'Q') {
+                roHis.point += 1;
+                roHis.playedCards.push({ card: roHis.playingCards[i].card.id });
+                roHis.playingCards.splice(i, 1);
+            }
+            else if (roHis.playingCards[i].card.value === 'J') {
+                roHis.point += 1;
+                roHis.playedCards.push({ card: roHis.playingCards[i].card.id });
+                roHis.playingCards.splice(i, 1);
+            }
+            else {
+                roHis.point += 0;
+                roHis.playedCards.push({ card: roHis.playingCards[i].card.id });
+                roHis.playingCards.splice(i, 1);
+            }
         }
+
+        await roHis.save();
+    } catch (err) {
+        console.log(err)
+        next(err)
     }
+
 }

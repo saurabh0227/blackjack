@@ -5,8 +5,7 @@ const roundHistorySchema = new Schema({
     player: { type: Schema.ObjectId, ref: 'Player' },
     playingCards: [
         {
-            card: { type: Schema.ObjectId, ref: 'Card' },
-            rank: { type: Number }
+            card: { type: Schema.ObjectId, ref: 'Card' }
         }
     ],
     round: { type: Schema.ObjectId, ref: 'Round' },
@@ -15,11 +14,8 @@ const roundHistorySchema = new Schema({
     lossCount: { type: Number, default: 0 },
     tieCount: { type: Number, default: 0 },
     number: { type: Number, default: 1 },
-    cardType: { type: String, default: '' },
     playedCards: [{
-        cardName: String,
-        cardValue: String,
-        rank: String
+        card: { type: Schema.ObjectId, ref: 'Card' }
     }],
     point: { type: Number, default: 0 }
 }, {
@@ -39,7 +35,6 @@ roundHistorySchema.methods = {
             lossCount: this.lossCount,
             tieCount: this.tieCount,
             number: this.number,
-            cardType: this.cardType,
             playedCards: this.playedCards,
             point: this.point
         }
@@ -47,11 +42,9 @@ roundHistorySchema.methods = {
         const history = {
             playerName: this.player && this.player.name ? this.player.name : '--',
             roundName: this.round && this.round.name ? this.round.name : '--',
-            gameName: this.round && this.round.game && this.round.game.name ? this.round.game.name : '--',
             winCount: this.winCount,
             lossCount: this.lossCount,
             tieCount: this.tieCount
-
         }
 
         if (full === 'history') return history

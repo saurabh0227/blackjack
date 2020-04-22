@@ -5,7 +5,6 @@ npm start
 
 # Folder structure
 src -> api -> card (model, route and controller)
-src -> api -> game (model, route and controller)
 src -> api -> player (model, route and controller)
 src -> api -> round (model, route and controller)
 src -> api -> round_history (model, route and controller)

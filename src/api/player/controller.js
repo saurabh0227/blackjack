@@ -88,16 +88,7 @@ export const history = (req, res, next) => {
     let view = req.query.view ? req.query.view : null;
     RoundHistory.find({ player: req.query.playerId })
         .populate('player', 'name')
-        .populate(
-            {
-                path: 'round',
-                select: 'game name',
-                populate: {
-                    path: 'game',
-                    select: 'name'
-                }
-            }
-        )
+        .populate('round', 'name')
         .then((histories) => ({
             data: histories.map(history => history.view(view))
         }))

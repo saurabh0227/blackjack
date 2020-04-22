@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 
 import playerRoute from './api/player/router';
 import cardRoute from './api/card/router';
-import gameRoute from './api/game/router';
 import roundRoute from './api/round/router';
 import roundHistoryRoute from './api/round_history/router';
 
@@ -22,7 +21,6 @@ app.use((req, res, next) => {
 
 app.use('/player', playerRoute);
 app.use('/card', cardRoute);
-app.use('/game', gameRoute);
 app.use('/round', roundRoute);
 app.use('/round-history', roundHistoryRoute);
 

@@ -11,8 +11,7 @@ router.get('/list', list);
 
 router.delete('/delete/:id', destroy);
 
-router.get('/distribute-card/:roundId/:playerId/:cardType', distributeCard);
-// router.get('/distribute-card/:roundId/:playerId/:cardsPerPlayer', distributeCard);
+router.get('/distribute-card/:roundId/:playerId', distributeCard);
 
 router.put('/update/:roundId/:playerId', throwCard);
 
